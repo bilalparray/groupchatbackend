@@ -1,0 +1,65 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Output / build artifacts
+dist/
+build/
+coverage/
+.next/
+out/
+.temp/
+.tmp/
+.cache/
+.cache-loader/
+.bundled/
+.serverless/
+functions/
+
+# Environment / secrets
+.env
+.env.*.local
+*.local.env
+
+# Logs
+logs/
+*.log
+*.log.*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE / tooling
+.vscode/
+.idea/
+*.iml
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+.nyc_output/
+jest-cache/
+jest-output/
+
+# Misc package manager cache
+.npm/
+.yarn/
+.pnp/
+.pnp.js
+
+# Optional: if using Docker
+docker-volume/
