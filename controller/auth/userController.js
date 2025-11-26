@@ -15,7 +15,7 @@ import sendEmail from "../../middlewares/utills/sendEmail.js";
 export const registerController = async (req, res) => {
   const { reqData } = req.body;
   const { username, email, password, role } = reqData || {};
-  const validRoles = ["SuperAdmin","Admin", "endUser","Guest"];
+  const validRoles = ["SuperAdmin", "Admin", "User", "Guest"];
 
   if (!role || !validRoles.includes(role)) {
     return sendError(res, "Invalid or missing role", 400);
@@ -27,7 +27,8 @@ export const registerController = async (req, res) => {
         [Op.or]: [{ username }, { email }],
       },
     });
-    if (existUser) return sendError(res, "Username or email already exists", 409);
+    if (existUser)
+      return sendError(res, "Username or email already exists", 409);
 
     const hashedPass = await bcryptjs.hash(password, 10);
     const user = await User.create({
@@ -35,7 +36,7 @@ export const registerController = async (req, res) => {
       email,
       password: hashedPass,
       role,
-      refreshToken: null 
+      refreshToken: null,
     });
 
     return sendSuccess(
@@ -76,22 +77,22 @@ export const loginController = async (req, res) => {
     const isValid = await bcryptjs.compare(password, user.password);
     if (!isValid) return sendError(res, "Invalid credentials", 401);
 
-const accessToken = await generateAccessToken(user.dataValues);
-const refreshToken = await generateRefreshToken(user.dataValues); // ✅ FIXED
+    const accessToken = await generateAccessToken(user.dataValues);
+    const refreshToken = await generateRefreshToken(user.dataValues); // ✅ FIXED
 
-await user.update({ refreshToken, lastLoginAt: new Date() });
+    await user.update({ refreshToken, lastLoginAt: new Date() });
 
-res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: true,
-});
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
 
-return sendSuccess(res, {
-  username: user.username,
-  role: user.role,
-  accessToken,
-  refreshToken,
-});
+    return sendSuccess(res, {
+      username: user.username,
+      role: user.role,
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     return sendError(res, error.message || "Internal Error");
   }
