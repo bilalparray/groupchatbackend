@@ -4,11 +4,12 @@ dotenv.config();
 
 // Models
 import createUserModel from "../model/userModel.js";
+import createGuestKeyModel from "../model/guestKeyModel.js"
 
-//import refundModel from "../model/refund.model.js";
 
 // Variables
 let User = null;
+let GuestKey=null;
 
 
 // DB Connection
@@ -36,6 +37,7 @@ export const dbConnection = async (database, username, password) => {
 
     // Initialize models
     User = await createUserModel(sequelize);
+    GuestKey=await createGuestKeyModel(sequelize);
  
     
 
@@ -46,7 +48,8 @@ export const dbConnection = async (database, username, password) => {
     return {
       sequelize,
       models: {
-        User
+        User,
+        GuestKey
         //Refund
       },
     };
@@ -58,5 +61,6 @@ export const dbConnection = async (database, username, password) => {
 
 // Export models
 export {
-  User
+  User,
+  GuestKey
 };
