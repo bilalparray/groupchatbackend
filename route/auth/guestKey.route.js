@@ -1,7 +1,8 @@
 import express from 'express';
 import {
 generateGuestKeyController,
-guestLoginWithKeyController
+guestLoginWithKeyController,
+updateGuestStatusController,
 } from "../../controller/auth/guestKeyController.js";
 
 import { authenticateToken } from "../../middlewares/auth/auth.js";
@@ -17,6 +18,11 @@ generateGuestKeyController
 guestKeyRoutes.post(
 "/guest-login",
 guestLoginWithKeyController
+);
+guestKeyRoutes.post(
+"/guestkey/status",
+authenticateToken,
+updateGuestStatusController
 );
 
 export default guestKeyRoutes;
