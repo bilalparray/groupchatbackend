@@ -75,7 +75,7 @@ app.use(cookieParser());
 // --------------------------------------------------
 // Register All Routes
 // --------------------------------------------------
-registerRoutes(app, process.env.BASE_URL);
+// registerRoutes(app, process.env.BASE_URL);
 
 // --------------------------------------------------
 // Health Check
