@@ -1,0 +1,750 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GroupChatBackend API",
+    "version": "1.0.0",
+    "description": "Auto-generated OpenAPI 3 docs (best-effort)."
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "integer"
+          },
+          "lastModifiedBy": {
+            "type": "integer"
+          },
+          "resetToken": {
+            "type": "string"
+          },
+          "resetTokenExpiry": {
+            "type": "string"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password",
+          "role"
+        ]
+      },
+      "GuestKey": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "key": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "totalGuestsRegistered": {
+            "type": "integer"
+          },
+          "activeGuestsCount": {
+            "type": "integer"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "department",
+          "createdBy"
+        ]
+      },
+      "Guest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "guestKeyId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "guestKeyId"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "api"
+        ],
+        "summary": "GET /api/v1/health",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "register"
+        ],
+        "summary": "POST /register",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "username": "string_username",
+                  "email": "user@example.com",
+                  "password": "string_password",
+                  "role": "string_role",
+                  "reqData": "2025-12-09T19:15:30.869Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "username": "string_username",
+                  "email": "user@example.com",
+                  "role": "string_role"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "POST /login",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "username": "string_username",
+                  "password": "string_password",
+                  "reqData": "2025-12-09T19:15:30.871Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "username": "string_username",
+                  "role": "string_role"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "tags": [
+          "refresh"
+        ],
+        "summary": "POST /refresh",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "logout"
+        ],
+        "summary": "POST /logout",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/forgot-password": {
+      "post": {
+        "tags": [
+          "forgot-password"
+        ],
+        "summary": "POST /forgot-password",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "email": "user@example.com",
+                  "reqData": "2025-12-09T19:15:30.871Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset-password/:token": {
+      "post": {
+        "tags": [
+          "reset-password"
+        ],
+        "summary": "POST /reset-password/:token",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "newPassword": "string_newPassword",
+                  "reqData": "2025-12-09T19:15:30.871Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/check-email": {
+      "post": {
+        "tags": [
+          "check-email"
+        ],
+        "summary": "POST /check-email",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "email": "user@example.com",
+                  "reqData": "2025-12-09T19:15:30.871Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-guest-key": {
+      "post": {
+        "tags": [
+          "generate-guest-key"
+        ],
+        "summary": "POST /generate-guest-key",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "department": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "department": "string_department",
+                  "reqData": "2025-12-09T19:15:30.871Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "guestKeyId": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "createdOnUTC": {
+                      "type": "string"
+                    },
+                    "lastModifiedOnUTC": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "guestKeyId"
+                  ]
+                },
+                "example": {
+                  "id": 1,
+                  "name": "string_name",
+                  "guestKeyId": 1,
+                  "status": "2025-12-09T19:15:30.871Z",
+                  "createdOnUTC": "2025-12-09T19:15:30.871Z",
+                  "lastModifiedOnUTC": "string_lastModifiedOnUTC"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/guest-login": {
+      "post": {
+        "tags": [
+          "guest-login"
+        ],
+        "summary": "POST /guest-login",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestKey": {
+                    "type": "string"
+                  },
+                  "guestName": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "guestKey": "string_guestKey",
+                  "guestName": "string_guestName",
+                  "role": "string_role",
+                  "reqData": "2025-12-09T19:15:30.872Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    },
+                    "guestKey": {
+                      "type": "string"
+                    },
+                    "department": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "role": "string_role",
+                  "guestKey": "string_guestKey",
+                  "department": "string_department"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/guestkey/status": {
+      "post": {
+        "tags": [
+          "guestkey"
+        ],
+        "summary": "POST /guestkey/status",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "reqData": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "guestId": 1,
+                  "status": "2025-12-09T19:15:30.872Z",
+                  "reqData": "2025-12-09T19:15:30.872Z"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

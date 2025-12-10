@@ -1,5 +1,4 @@
 
-
 import express from 'express';
 import {
   registerController,
@@ -9,7 +8,7 @@ import {
   forgotPasswordController,
   resetPasswordController,
   checkEmailExistsController
-} from '../../controller/auth/userController.js';
+} from '../controller/auth/userController.js';
 
 const router = express.Router();
 

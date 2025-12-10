@@ -1,11 +1,17 @@
-import router from "../route/auth/auth.routes.js";
-import guestKeyRoutes from "../route/auth/guestKey.route.js"
+import authRouter from "../routes/auth.routes.js";
+import guestKeyRoutes from "../routes/guestKey.route.js";
+
 /**
  * Registers all routes with base paths
  * @param {Express.Application} app 
  * @param {string} baseUrl 
  */
 export const registerRoutes = (app, baseUrl = "") => {
-  app.use(`${baseUrl}`, router);
-  app.use(`${baseUrl}`,guestKeyRoutes)
+
+  // ❗ health route MUST NOT use BASE_URL
+app.get( "/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+  app.use(`${baseUrl}`, authRouter);
+  app.use(`${baseUrl}`, guestKeyRoutes);
 };

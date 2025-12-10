@@ -5,11 +5,14 @@ dotenv.config();
 // Models
 import createUserModel from "../model/userModel.js";
 import createGuestKeyModel from "../model/guestKeyModel.js"
+import createGuestModel from "../model/guestModel.js"
+
 
 
 // Variables
 let User = null;
 let GuestKey=null;
+let Guest=null;
 
 
 // DB Connection
@@ -38,8 +41,10 @@ export const dbConnection = async (database, username, password) => {
     // Initialize models
     User = await createUserModel(sequelize);
     GuestKey=await createGuestKeyModel(sequelize);
+    Guest=await createGuestModel(sequelize)
  
-    
+    GuestKey.hasMany(Guest, { foreignKey: "guestKeyId" });
+    Guest.belongsTo(GuestKey, { foreignKey: "guestKeyId" });
 
     // Database Sync
     await sequelize.sync({ alter: true });
@@ -49,7 +54,8 @@ export const dbConnection = async (database, username, password) => {
       sequelize,
       models: {
         User,
-        GuestKey
+        GuestKey,
+        Guest
         //Refund
       },
     };
@@ -62,5 +68,6 @@ export const dbConnection = async (database, username, password) => {
 // Export models
 export {
   User,
-  GuestKey
+  GuestKey,
+  Guest
 };

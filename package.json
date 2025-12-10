@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+   "swagger-gen": "node swagger.js",
+"start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "debug": "nodemon --inspect index.js"
@@ -28,6 +29,9 @@
     "razorpay": "^2.9.6",
     "sequelize": "^6.37.6",
     "sharp": "^0.34.3",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
