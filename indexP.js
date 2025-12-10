@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./MainRoute/mainRoutes.js";
-import { dbConnection } from "./db/dbconnection.js";
+import { dbConnection } from "./db/dbconnectionP.js";
 
 dotenv.config();
 const app = express();
@@ -11,10 +11,7 @@ const app = express();
 // --------------------------------------------------
 // ✅ CORS MUST BE FIRST
 // --------------------------------------------------
-const allowedOrigins = [
-  "https://xyz.in",
-  "https://www.xyz.in",
-];
+const allowedOrigins = ["https://xyz.in", "https://www.xyz.in"];
 
 app.use(
   cors({
