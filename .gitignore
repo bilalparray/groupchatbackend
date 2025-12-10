@@ -54,3 +54,5 @@ Thumbs.db
 /package-lock.json
 .nx
 .vscode
+/docs/swagger.json
+docs/swagger.json
