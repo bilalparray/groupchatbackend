@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./MainRoute/mainRoutes.js";
 import { dbConnection } from "./db/dbconnectionP.js";
+import { setupSwagger } from "./swagger/swagger-autosetup.js";
 
 dotenv.config();
 const app = express();
@@ -80,28 +81,56 @@ app.get("/health", (req, res) =>
 // --------------------------------------------------
 // Start Server After DB Connection
 // --------------------------------------------------
-const startServer = async () => {
+// const startServer = async () => {
+//   try {
+//     const { sequelize, models } = await dbConnection();
+//     console.log("✅ DB connected, starting server...");
+
+//     // Attach models after DB connect
+//     app.use((req, res, next) => {
+//       req.models = models;
+//       next();
+//     });
+
+//     const PORT = process.env.PORT || 8081;
+//     app.listen(PORT, () => {
+//       console.log(
+//         `🚀 Server running on port ${PORT} (ENV=${
+//           process.env.NODE_ENV || "development"
+//         })`
+//       );
+//     });
+//   } catch (err) {
+//     console.error("❌ Failed to start server:", err);
+//   }
+// };
+
+// startServer();
+
+async function start() {
   try {
-    const { sequelize, models } = await dbConnection();
-    console.log("✅ DB connected, starting server...");
+    // 1) Initialize DB
+    await dbConnection(
+      process.env.DB_NAME,
+      process.env.DB_USER,
+      process.env.DB_PASS
+    );
 
-    // Attach models after DB connect
-    app.use((req, res, next) => {
-      req.models = models;
-      next();
-    });
+    // 2) Register ALL ROUTES (BASE_URL applied only here)
+    registerRoutes(app, process.env.BASE_URL);
 
+    // 3) Setup Swagger — ❗ NO BASE_URL HERE
+    await setupSwagger(app);
+
+    // 4) Start server
     const PORT = process.env.PORT || 8081;
     app.listen(PORT, () => {
-      console.log(
-        `🚀 Server running on port ${PORT} (ENV=${
-          process.env.NODE_ENV || "development"
-        })`
-      );
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
   } catch (err) {
     console.error("❌ Failed to start server:", err);
+    process.exit(1);
   }
-};
+}
 
-startServer();
+start();

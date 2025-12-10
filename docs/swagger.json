@@ -10,6 +10,28 @@
       "url": "/api/v1"
     }
   ],
+  "tags": [
+    {
+      "name": "* Controller",
+      "description": "Endpoints for * Controller"
+    },
+    {
+      "name": "Guest Key Controller",
+      "description": "Endpoints for Guest Key Controller"
+    },
+    {
+      "name": "Health Controller",
+      "description": "Endpoints for Health Controller"
+    },
+    {
+      "name": "User Controller",
+      "description": "Endpoints for User Controller"
+    },
+    {
+      "name": "api",
+      "description": "Endpoints for api"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "BearerAuth": {
@@ -18,127 +40,67 @@
         "bearerFormat": "JWT"
       }
     },
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "createdBy": {
-            "type": "integer"
-          },
-          "lastModifiedBy": {
-            "type": "integer"
-          },
-          "resetToken": {
-            "type": "string"
-          },
-          "resetTokenExpiry": {
-            "type": "string"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "email",
-          "password",
-          "role"
-        ]
-      },
-      "GuestKey": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "key": {
-            "type": "string"
-          },
-          "department": {
-            "type": "string"
-          },
-          "createdBy": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string"
-          },
-          "totalGuestsRegistered": {
-            "type": "integer"
-          },
-          "activeGuestsCount": {
-            "type": "integer"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "key",
-          "department",
-          "createdBy"
-        ]
-      },
-      "Guest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "guestKeyId": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "guestKeyId"
-        ]
-      }
-    }
+    "schemas": {}
   },
   "paths": {
-    "/api/v1/health": {
+    "*": {
+      "options": {
+        "tags": [
+          "* Controller"
+        ],
+        "summary": "OPTIONS *",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health Controller"
+        ],
+        "summary": "GET /health",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
       "get": {
         "tags": [
           "api"
         ],
-        "summary": "GET /api/v1/health",
+        "summary": "GET /",
         "security": [
           {
             "BearerAuth": []
@@ -162,7 +124,7 @@
     "/register": {
       "post": {
         "tags": [
-          "register"
+          "User Controller"
         ],
         "summary": "POST /register",
         "security": [
@@ -177,20 +139,22 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "email": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  },
-                  "role": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
@@ -199,8 +163,7 @@
                   "username": "string_username",
                   "email": "user@example.com",
                   "password": "string_password",
-                  "role": "string_role",
-                  "reqData": "2025-12-09T19:15:30.869Z"
+                  "role": "string_role"
                 }
               }
             }
@@ -239,7 +202,7 @@
     "/login": {
       "post": {
         "tags": [
-          "login"
+          "User Controller"
         ],
         "summary": "POST /login",
         "security": [
@@ -254,22 +217,23 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
                   "username": "string_username",
-                  "password": "string_password",
-                  "reqData": "2025-12-09T19:15:30.871Z"
+                  "password": "string_password"
                 }
               }
             }
@@ -304,7 +268,7 @@
     "/refresh": {
       "post": {
         "tags": [
-          "refresh"
+          "User Controller"
         ],
         "summary": "POST /refresh",
         "security": [
@@ -330,7 +294,7 @@
     "/logout": {
       "post": {
         "tags": [
-          "logout"
+          "User Controller"
         ],
         "summary": "POST /logout",
         "security": [
@@ -363,7 +327,7 @@
     "/forgot-password": {
       "post": {
         "tags": [
-          "forgot-password"
+          "User Controller"
         ],
         "summary": "POST /forgot-password",
         "security": [
@@ -378,18 +342,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
-                  "email": "user@example.com",
-                  "reqData": "2025-12-09T19:15:30.871Z"
+                  "email": "user@example.com"
                 }
               }
             }
@@ -420,7 +385,7 @@
     "/reset-password/:token": {
       "post": {
         "tags": [
-          "reset-password"
+          "User Controller"
         ],
         "summary": "POST /reset-password/:token",
         "security": [
@@ -435,18 +400,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "newPassword": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "newPassword": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
-                  "newPassword": "string_newPassword",
-                  "reqData": "2025-12-09T19:15:30.871Z"
+                  "newPassword": "string_newPassword"
                 }
               }
             }
@@ -477,7 +443,7 @@
     "/check-email": {
       "post": {
         "tags": [
-          "check-email"
+          "User Controller"
         ],
         "summary": "POST /check-email",
         "security": [
@@ -492,18 +458,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
-                  "email": "user@example.com",
-                  "reqData": "2025-12-09T19:15:30.871Z"
+                  "email": "user@example.com"
                 }
               }
             }
@@ -534,7 +501,7 @@
     "/generate-guest-key": {
       "post": {
         "tags": [
-          "generate-guest-key"
+          "Guest Key Controller"
         ],
         "summary": "POST /generate-guest-key",
         "security": [
@@ -549,18 +516,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "department": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "department": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
-                  "department": "string_department",
-                  "reqData": "2025-12-09T19:15:30.871Z"
+                  "department": "string_department"
                 }
               }
             }
@@ -572,40 +540,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "guestKeyId": {
-                      "type": "integer"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "createdOnUTC": {
-                      "type": "string"
-                    },
-                    "lastModifiedOnUTC": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "guestKeyId"
-                  ]
+                  "type": "object"
                 },
-                "example": {
-                  "id": 1,
-                  "name": "string_name",
-                  "guestKeyId": 1,
-                  "status": "2025-12-09T19:15:30.871Z",
-                  "createdOnUTC": "2025-12-09T19:15:30.871Z",
-                  "lastModifiedOnUTC": "string_lastModifiedOnUTC"
-                }
+                "example": {}
               }
             }
           }
@@ -615,7 +552,7 @@
     "/guest-login": {
       "post": {
         "tags": [
-          "guest-login"
+          "Guest Key Controller"
         ],
         "summary": "POST /guest-login",
         "security": [
@@ -630,17 +567,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "guestKey": {
-                    "type": "string"
-                  },
-                  "guestName": {
-                    "type": "string"
-                  },
-                  "role": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "guestKey": {
+                        "type": "string"
+                      },
+                      "guestName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
@@ -648,8 +587,7 @@
                 "reqData": {
                   "guestKey": "string_guestKey",
                   "guestName": "string_guestName",
-                  "role": "string_role",
-                  "reqData": "2025-12-09T19:15:30.872Z"
+                  "role": "string_role"
                 }
               }
             }
@@ -688,7 +626,7 @@
     "/guestkey/status": {
       "post": {
         "tags": [
-          "guestkey"
+          "Guest Key Controller"
         ],
         "summary": "POST /guestkey/status",
         "security": [
@@ -703,22 +641,23 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "guestId": {
-                    "type": "string"
-                  },
-                  "status": {
-                    "type": "string"
-                  },
                   "reqData": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "guestId": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
               "example": {
                 "reqData": {
                   "guestId": 1,
-                  "status": "2025-12-09T19:15:30.872Z",
-                  "reqData": "2025-12-09T19:15:30.872Z"
+                  "status": "string_status"
                 }
               }
             }
