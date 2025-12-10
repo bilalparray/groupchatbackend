@@ -22,6 +22,7 @@ export const registerController = async (req, res) => {
   }
 
   try {
+    const { User } = req.models || {};
     const existUser = await User.findOne({
       where: {
         [Op.or]: [{ username }, { email }],
@@ -68,6 +69,13 @@ export const checkEmailExistsController = async (req, res) => {
 
 // ✅ LOGIN
 export const loginController = async (req, res) => {
+  const { User } = req.models || {};
+  debugger;
+
+  if (!User) {
+    console.error("User model not available on req.models");
+    return sendError(res, "Server misconfiguration: models not loaded", 500);
+  }
   const { reqData } = req.body;
   const { username, password } = reqData || {};
   try {

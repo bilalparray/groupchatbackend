@@ -1,54 +1,50 @@
+// db/dbconnectionP.js
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Models
+// Model factories
 import createUserModel from "../model/userModel.js";
 import createGuestKeyModel from "../model/guestKeyModel.js";
 import createGuestModel from "../model/guestModel.js";
 
-//import refundModel from "../model/refund.model.js";
-
-// Variables
-let User = null;
-let GuestKey = null;
-let Guest = null;
-
-// DB Connection
-// export const dbConnection = async (database, username, password) => {
-//   const sequelize = new Sequelize(database, username, password, {
-//     host: "localhost",
-//     dialect: "postgres",
-//   });
-//  Production DB connection (commented)
+/**
+ * Establish DB connection and initialize models.
+ * Returns: { sequelize, models: { User, GuestKey, Guest } }
+ *
+ * IMPORTANT: Do NOT export model variables at top-level.
+ */
 export const dbConnection = async () => {
-  console.log("DATABASE_URL:", process.env.DATABASE_URL);
+  console.log("DATABASE_URL:", !!process.env.DATABASE_URL);
+
   const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: "postgres",
     protocol: "postgres",
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false, // Required for Railway PostgreSQL SSL
+        rejectUnauthorized: false,
       },
     },
+    logging: false,
   });
+
   try {
     await sequelize.authenticate();
     console.log("✅ DB Authenticated");
 
-    // Initialize models
-    User = await createUserModel(sequelize);
-    GuestKey = await createGuestKeyModel(sequelize);
-    Guest = await createGuestModel(sequelize);
+    // Initialize models (model factories should return the model synchronously)
+    const User = createUserModel(sequelize);
+    const GuestKey = createGuestKeyModel(sequelize);
+    const Guest = createGuestModel(sequelize);
 
-    //Refund = await refundModel(sequelize);
+    // Define associations AFTER models are created
+    GuestKey.hasMany(Guest, { foreignKey: "guestKeyId" });
+    Guest.belongsTo(GuestKey, { foreignKey: "guestKeyId" });
 
-    //Check this
-
-    // Database Sync
+    // Sync (use alter/migrate carefully in production)
     await sequelize.sync();
-    console.log("✅ Connection has been established successfully.");
+    console.log("✅ Models synced and connection ready.");
 
     return {
       sequelize,
@@ -64,5 +60,5 @@ export const dbConnection = async () => {
   }
 };
 
-// Export models
-export { User, GuestKey, Guest };
+// NOTE: Do NOT export User/GuestKey/Guest here as top-level exports.
+// Controllers should get models from the returned `models` object (or req.models).

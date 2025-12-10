@@ -12,6 +12,10 @@
   ],
   "tags": [
     {
+      "name": "* Controller",
+      "description": "Endpoints for * Controller"
+    },
+    {
       "name": "Guest Key Controller",
       "description": "Endpoints for Guest Key Controller"
     },
@@ -36,121 +40,35 @@
         "bearerFormat": "JWT"
       }
     },
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "createdBy": {
-            "type": "integer"
-          },
-          "lastModifiedBy": {
-            "type": "integer"
-          },
-          "resetToken": {
-            "type": "string"
-          },
-          "resetTokenExpiry": {
-            "type": "string"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "email",
-          "password",
-          "role"
-        ]
-      },
-      "GuestKey": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "key": {
-            "type": "string"
-          },
-          "department": {
-            "type": "string"
-          },
-          "createdBy": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string"
-          },
-          "totalGuestsRegistered": {
-            "type": "integer"
-          },
-          "activeGuestsCount": {
-            "type": "integer"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "key",
-          "department",
-          "createdBy"
-        ]
-      },
-      "Guest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "guestKeyId": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string"
-          },
-          "createdOnUTC": {
-            "type": "string"
-          },
-          "lastModifiedOnUTC": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "guestKeyId"
-        ]
-      }
-    }
+    "schemas": {}
   },
   "paths": {
+    "*": {
+      "options": {
+        "tags": [
+          "* Controller"
+        ],
+        "summary": "OPTIONS *",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -622,40 +540,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "guestKeyId": {
-                      "type": "integer"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "createdOnUTC": {
-                      "type": "string"
-                    },
-                    "lastModifiedOnUTC": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "guestKeyId"
-                  ]
+                  "type": "object"
                 },
-                "example": {
-                  "id": 1,
-                  "name": "string_name",
-                  "guestKeyId": 1,
-                  "status": "string_status",
-                  "createdOnUTC": "string_createdOnUTC",
-                  "lastModifiedOnUTC": "string_lastModifiedOnUTC"
-                }
+                "example": {}
               }
             }
           }

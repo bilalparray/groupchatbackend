@@ -117,7 +117,7 @@ async function start() {
   try {
     // 1) Initialize DB
     const { sequelize, models } = await dbConnection();
-    console.log("✅ DB connected, starting server...");
+    console.log("MODELS LOADED:", Object.keys(models));
     //     // Attach models after DB connect
     app.use((req, res, next) => {
       req.models = models;
