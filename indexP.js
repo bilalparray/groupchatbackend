@@ -12,8 +12,13 @@ const app = express();
 // --------------------------------------------------
 // ✅ CORS MUST BE FIRST
 // --------------------------------------------------
-const allowedOrigins = ["https://xyz.in", "https://www.xyz.in"];
-
+const allowedOrigins = [
+  "http://localhost",
+  "http://localhost:8100",
+  "https://localhost",
+  "capacitor://localhost",
+  "ionic://localhost",
+];
 app.use(
   cors({
     origin: function (origin, callback) {
