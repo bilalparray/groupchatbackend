@@ -66,29 +66,49 @@ export const checkEmailExistsController = async (req, res) => {
   }
 };
 
-// ✅ LOGIN
+// ✅ LOGIN (username OR email)
 export const loginController = async (req, res) => {
   const { reqData } = req.body;
-  const { username, password } = reqData || {};
+  const { username, email, password } = reqData || {};
+
   try {
-    const user = await User.findOne({ where: { username } });
+    // Ensure at least username or email is provided
+    if (!username && !email) {
+      return sendError(res, "Username or Email is required", 400);
+    }
+
+    // 💡 Find user by either username OR email
+    const user = await User.findOne({
+      where: {
+        ...(username && { username }),
+        ...(email && { email }),
+      },
+    });
+
     if (!user) return sendError(res, "User not found", 404);
 
+    // Validate password
     const isValid = await bcryptjs.compare(password, user.password);
     if (!isValid) return sendError(res, "Invalid credentials", 401);
 
+    // Generate tokens
     const accessToken = await generateAccessToken(user.dataValues);
-    const refreshToken = await generateRefreshToken(user.dataValues); // ✅ FIXED
+    const refreshToken = await generateRefreshToken(user.dataValues);
 
+    // Update refresh token & login time
     await user.update({ refreshToken, lastLoginAt: new Date() });
 
+    // Store refresh token in cookies
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: "strict",
     });
 
+    // Success response
     return sendSuccess(res, {
       username: user.username,
+      email: user.email,
       role: user.role,
       accessToken,
       refreshToken,
@@ -97,6 +117,7 @@ export const loginController = async (req, res) => {
     return sendError(res, error.message || "Internal Error");
   }
 };
+
 
 // ✅ FORGOT PASSWORD
 export const forgotPasswordController = async (req, res) => {
