@@ -16,6 +16,7 @@ const allowedOrigins = [
   "http://localhost",
   "http://localhost:8100",
   "https://localhost",
+  "https://groupchatbackend-41bl.onrender.com",
   "capacitor://localhost",
   "ionic://localhost",
 ];
@@ -115,12 +116,13 @@ app.get("/health", (req, res) =>
 async function start() {
   try {
     // 1) Initialize DB
-    await dbConnection(
-      process.env.DB_NAME,
-      process.env.DB_USER,
-      process.env.DB_PASS
-    );
-
+    const { sequelize, models } = await dbConnection();
+    console.log("✅ DB connected, starting server...");
+    //     // Attach models after DB connect
+    app.use((req, res, next) => {
+      req.models = models;
+      next();
+    });
     // 2) Register ALL ROUTES (BASE_URL applied only here)
     registerRoutes(app, process.env.BASE_URL);
 
