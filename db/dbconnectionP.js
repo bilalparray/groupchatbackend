@@ -14,6 +14,10 @@ import createGuestModel from "../model/guestModel.js";
  *
  * IMPORTANT: Do NOT export model variables at top-level.
  */
+    let User = null;
+    let GuestKey = null;
+    let Guest =null;
+
 export const dbConnection = async () => {
   console.log("DATABASE_URL:", !!process.env.DATABASE_URL);
 
@@ -34,9 +38,9 @@ export const dbConnection = async () => {
     console.log("✅ DB Authenticated");
 
     // Initialize models (model factories should return the model synchronously)
-    const User = createUserModel(sequelize);
-    const GuestKey = createGuestKeyModel(sequelize);
-    const Guest = createGuestModel(sequelize);
+     User = createUserModel(sequelize);
+     GuestKey = createGuestKeyModel(sequelize);
+     Guest = createGuestModel(sequelize);
 
     // Define associations AFTER models are created
     GuestKey.hasMany(Guest, { foreignKey: "guestKeyId" });
