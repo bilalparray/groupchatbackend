@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./MainRoute/mainRoutes.js";
 import { dbConnection } from "./db/dbconnectionP.js";
+import { setupSwagger } from "./swagger/swagger-autosetup.js";
 
 dotenv.config();
 const app = express();
@@ -11,32 +12,66 @@ const app = express();
 // --------------------------------------------------
 // ✅ CORS MUST BE FIRST
 // --------------------------------------------------
-const allowedOrigins = ["https://xyz.in", "https://www.xyz.in"];
+// const allowedOrigins = [
+//   "http://localhost",
+//   "http://localhost:8100",
+//   "https://localhost",
+//   "https://groupchatbackend-41bl.onrender.com",
+//   "capacitor://localhost",
+//   "ionic://localhost",
+// ];
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // Allow server-to-server requests (no origin)
+//       if (!origin) return callback(null, true);
+
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       } else {
+//         return callback(new Error("Not allowed by CORS"), false);
+//       }
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//     allowedHeaders: [
+//       "Content-Type",
+//       "Authorization",
+//       "X-Requested-With",
+//       "Accept",
+//       "Origin",
+//       "targetapitype",
+//       "isdeveloperapk",
+//       "appversion",
+//     ],
+//   })
+// );
+const allowedOrigins = [
+  "http://localhost",
+  "http://localhost:8100",
+  "http://localhost:4200",
+  "capacitor://localhost",
+  "ionic://localhost",
+  "https://groupchatbackend-41bl.onrender.com",
+];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow server-to-server requests (no origin)
+      // Allow mobile apps / postman / server-to-server (origin = undefined)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      const isAllowed = allowedOrigins.some((allowed) =>
+        origin.startsWith(allowed)
+      );
+
+      if (isAllowed) {
         return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"), false);
       }
+      console.log("❌ CORS BLOCKED ORIGIN:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-      "Origin",
-      "targetapitype",
-      "isdeveloperapk",
-      "appversion",
-    ],
   })
 );
 
@@ -68,7 +103,7 @@ app.use(cookieParser());
 // --------------------------------------------------
 // Register All Routes
 // --------------------------------------------------
-registerRoutes(app, process.env.BASE_URL);
+// registerRoutes(app, process.env.BASE_URL);
 
 // --------------------------------------------------
 // Health Check
@@ -80,28 +115,57 @@ app.get("/health", (req, res) =>
 // --------------------------------------------------
 // Start Server After DB Connection
 // --------------------------------------------------
-const startServer = async () => {
-  try {
-    const { sequelize, models } = await dbConnection();
-    console.log("✅ DB connected, starting server...");
+// const startServer = async () => {
+//   try {
+//     const { sequelize, models } = await dbConnection();
+//     console.log("✅ DB connected, starting server...");
 
-    // Attach models after DB connect
+//     // Attach models after DB connect
+//     app.use((req, res, next) => {
+//       req.models = models;
+//       next();
+//     });
+
+//     const PORT = process.env.PORT || 8081;
+//     app.listen(PORT, () => {
+//       console.log(
+//         `🚀 Server running on port ${PORT} (ENV=${
+//           process.env.NODE_ENV || "development"
+//         })`
+//       );
+//     });
+//   } catch (err) {
+//     console.error("❌ Failed to start server:", err);
+//   }
+// };
+
+// startServer();
+
+async function start() {
+  try {
+    // 1) Initialize DB
+    const { sequelize, models } = await dbConnection();
+    console.log("MODELS LOADED:", Object.keys(models));
+    //     // Attach models after DB connect
     app.use((req, res, next) => {
       req.models = models;
       next();
     });
+    // 2) Register ALL ROUTES (BASE_URL applied only here)
+    registerRoutes(app, process.env.BASE_URL);
 
+    // 3) Setup Swagger — ❗ NO BASE_URL HERE
+    await setupSwagger(app);
+
+    // 4) Start server
     const PORT = process.env.PORT || 8081;
     app.listen(PORT, () => {
-      console.log(
-        `🚀 Server running on port ${PORT} (ENV=${
-          process.env.NODE_ENV || "development"
-        })`
-      );
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
   } catch (err) {
     console.error("❌ Failed to start server:", err);
+    process.exit(1);
   }
-};
+}
 
-startServer();
+start();

@@ -22,6 +22,7 @@ export const registerController = async (req, res) => {
   }
 
   try {
+    const { User } = req.models || {};
     const existUser = await User.findOne({
       where: {
         [Op.or]: [{ username }, { email }],
@@ -66,6 +67,44 @@ export const checkEmailExistsController = async (req, res) => {
   }
 };
 
+// ✅ LOGIN
+// export const loginController = async (req, res) => {
+//   const { User } = req.models || {};
+//   debugger;
+
+//   if (!User) {
+//     console.error("User model not available on req.models");
+//     return sendError(res, "Server misconfiguration: models not loaded", 500);
+//   }
+//   const { reqData } = req.body;
+//   const { username, password } = reqData || {};
+//   try {
+//     const user = await User.findOne({ where: { username } });
+//     if (!user) return sendError(res, "User not found", 404);
+
+//     const isValid = await bcryptjs.compare(password, user.password);
+//     if (!isValid) return sendError(res, "Invalid credentials", 401);
+
+//     const accessToken = await generateAccessToken(user.dataValues);
+//     const refreshToken = await generateRefreshToken(user.dataValues); // ✅ FIXED
+
+//     await user.update({ refreshToken, lastLoginAt: new Date() });
+
+//     res.cookie("refreshToken", refreshToken, {
+//       httpOnly: true,
+//       secure: true,
+//     });
+
+//     return sendSuccess(res, {
+//       username: user.username,
+//       role: user.role,
+//       accessToken,
+//       refreshToken,
+//     });
+//   } catch (error) {
+//     return sendError(res, error.message || "Internal Error");
+//   }
+// };
 // ✅ LOGIN (username OR email)
 export const loginController = async (req, res) => {
   const { reqData } = req.body;
