@@ -115,7 +115,7 @@ export const loginController = async (req, res) => {
     if (!username && !email) {
       return sendError(res, "Username or Email is required", 400);
     }
-
+    const { User } = req.models || {};
     // 💡 Find user by either username OR email
     const user = await User.findOne({
       where: {
