@@ -35,18 +35,28 @@ const authenticateToken = async (req, res, next) => {
   try {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
-      return res.status(401).json("Invalid token");
+      return sendError(res, "Authentication token missing", 401);
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
       if (error) {
-        return res.status(403).json("Token Expired");
+        return sendError(res, "Invalid or expired token", 403);
       }
-      req.user = decoded; // ✅ SET req.user
+      // For guests, ensure we have the correct structure
+      if (decoded.role === "Guest") {
+        req.user = { 
+          id: decoded.id, 
+          role: decoded.role,
+          name: decoded.name // Include name for guests
+        };
+      } else {
+        req.user = decoded; // ✅ SET req.user with { id, username/name, role, ... }
+      }
+      console.log(`[authenticateToken] Authenticated user:`, { id: req.user.id, role: req.user.role });
       next();
     });
   } catch (error) {
-    return res.status(500).json("Token processing failed");
+    return sendError(res, "Token processing failed", 500);
   }
 };
   
@@ -65,10 +75,17 @@ export default async function authenticate(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log('Decoded:', decoded); // 👈
 
-    const user = await User.findByPk(decoded.id);
-    if (!user) return sendError(res, 'User not found', 404);
-
-    req.user = { id: user.id, role: user.role };
+    // Check if it's a guest (role is "Guest") or a regular user
+    if (decoded.role === "Guest") {
+      // For guests, use the decoded info directly (they're in Guest table, not User table)
+      req.user = { id: decoded.id, role: decoded.role };
+    } else {
+      // For regular users, look them up in User table
+      const user = await User.findByPk(decoded.id);
+      if (!user) return sendError(res, 'User not found', 404);
+      req.user = { id: user.id, role: user.role };
+    }
+    
     next();
   } catch (err) {
     console.error('JWT Error:', err); // 👈

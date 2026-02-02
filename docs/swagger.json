@@ -12,12 +12,20 @@
   ],
   "tags": [
     {
+      "name": "Group Controller",
+      "description": "Endpoints for Group Controller"
+    },
+    {
       "name": "Guest Key Controller",
       "description": "Endpoints for Guest Key Controller"
     },
     {
       "name": "Health Controller",
       "description": "Endpoints for Health Controller"
+    },
+    {
+      "name": "Message Controller",
+      "description": "Endpoints for Message Controller"
     },
     {
       "name": "User Controller",
@@ -142,6 +150,137 @@
         "required": [
           "name",
           "guestKeyId"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "integer"
+          },
+          "inviteKey": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "integer"
+          },
+          "lastModifiedBy": {
+            "type": "integer"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "owner",
+          "inviteKey",
+          "createdBy"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "groupId": {
+            "type": "integer"
+          },
+          "sender": {
+            "type": "integer"
+          },
+          "senderName": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "fileType": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "fileUrl": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "integer"
+          },
+          "lastModifiedBy": {
+            "type": "integer"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "groupId",
+          "sender",
+          "senderName",
+          "type",
+          "content",
+          "createdBy"
+        ]
+      },
+      "GroupMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "groupId": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "userType": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "integer"
+          },
+          "lastModifiedBy": {
+            "type": "integer"
+          },
+          "createdOnUTC": {
+            "type": "string"
+          },
+          "lastModifiedOnUTC": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "groupId",
+          "userId",
+          "userType",
+          "createdBy"
         ]
       }
     }
@@ -692,21 +831,37 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "role": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
                       "type": "string"
                     },
-                    "guestKey": {
+                    "guestKeyId": {
+                      "type": "integer"
+                    },
+                    "status": {
                       "type": "string"
                     },
-                    "department": {
+                    "createdOnUTC": {
+                      "type": "string"
+                    },
+                    "lastModifiedOnUTC": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "name",
+                    "guestKeyId"
+                  ]
                 },
                 "example": {
-                  "role": "string_role",
-                  "guestKey": "string_guestKey",
-                  "department": "string_department"
+                  "id": 1,
+                  "name": "string_name",
+                  "guestKeyId": 1,
+                  "status": "string_status",
+                  "createdOnUTC": "string_createdOnUTC",
+                  "lastModifiedOnUTC": "string_lastModifiedOnUTC"
                 }
               }
             }
@@ -769,6 +924,444 @@
                 },
                 "example": {
                   "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups": {
+      "get": {
+        "tags": [
+          "Group Controller"
+        ],
+        "summary": "GET /groups",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groups": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "groups": "string_groups"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Group Controller"
+        ],
+        "summary": "POST /groups",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reqData": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "name": "string_name",
+                  "description": "string_description"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "group": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "type": "string"
+                    },
+                    "inviteKey": {
+                      "type": "string"
+                    },
+                    "members": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "string"
+                    },
+                    "unreadCount": {
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "type": "string"
+                    },
+                    "lastModifiedBy": {
+                      "type": "string"
+                    },
+                    "createdOnUTC": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "group": "string_group",
+                  "id": 1,
+                  "name": "string_name",
+                  "description": "string_description",
+                  "owner": "string_owner",
+                  "inviteKey": "string_inviteKey",
+                  "members": "string_members",
+                  "created": "string_created",
+                  "unreadCount": 123,
+                  "createdBy": "string_createdBy",
+                  "lastModifiedBy": "string_lastModifiedBy",
+                  "createdOnUTC": "string_createdOnUTC"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/:id/invite-key": {
+      "post": {
+        "tags": [
+          "Group Controller"
+        ],
+        "summary": "POST /groups/:id/invite-key",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "expiresAt": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "expiresAt": "2026-02-02T17:48:26.549Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/join/:inviteKey": {
+      "post": {
+        "tags": [
+          "Group Controller"
+        ],
+        "summary": "POST /groups/join/:inviteKey",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages": {
+      "get": {
+        "tags": [
+          "Message Controller"
+        ],
+        "summary": "GET /messages",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "messages": 123
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Message Controller"
+        ],
+        "summary": "POST /messages",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reqData": {
+                    "type": "object",
+                    "properties": {
+                      "groupId": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "fileType": {
+                        "type": "string"
+                      },
+                      "fileSize": {
+                        "type": "string"
+                      },
+                      "fileName": {
+                        "type": "string"
+                      },
+                      "duration": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "groupId": 1,
+                  "type": "string_type",
+                  "content": "string_content",
+                  "fileType": "string_fileType",
+                  "fileSize": "string_fileSize",
+                  "fileName": "string_fileName",
+                  "duration": "string_duration"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "groupId": {
+                      "type": "string"
+                    },
+                    "sender": {
+                      "type": "string"
+                    },
+                    "senderName": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "fileType": {
+                      "type": "string"
+                    },
+                    "fileSize": {
+                      "type": "string"
+                    },
+                    "fileName": {
+                      "type": "string"
+                    },
+                    "duration": {
+                      "type": "string"
+                    },
+                    "fileUrl": {
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "type": "string"
+                    },
+                    "lastModifiedBy": {
+                      "type": "string"
+                    },
+                    "createdOnUTC": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": 123,
+                  "id": 1,
+                  "groupId": 1,
+                  "sender": "string_sender",
+                  "senderName": "string_senderName",
+                  "type": "string_type",
+                  "content": "string_content",
+                  "timestamp": "string_timestamp",
+                  "fileType": "string_fileType",
+                  "fileSize": "string_fileSize",
+                  "fileName": "string_fileName",
+                  "duration": "string_duration",
+                  "fileUrl": "string_fileUrl",
+                  "createdBy": "string_createdBy",
+                  "lastModifiedBy": "string_lastModifiedBy",
+                  "createdOnUTC": "string_createdOnUTC"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/search": {
+      "post": {
+        "tags": [
+          "Message Controller"
+        ],
+        "summary": "POST /messages/search",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reqData": {
+                    "type": "object",
+                    "properties": {
+                      "groupId": {
+                        "type": "string"
+                      },
+                      "searchText": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "reqData": {
+                  "groupId": 1,
+                  "searchText": "string_searchText"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "messages": 123
                 }
               }
             }

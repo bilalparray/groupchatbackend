@@ -1,7 +1,10 @@
 // ./swagger/swagger-model-generator.js
 import {   User,
   GuestKey,
-  Guest } from "../db/dbconnection.js";
+  Guest,
+  Group,
+  Message,
+  GroupMember } from "../db/dbconnection.js";
 
 /**
  * Map a Sequelize dataType key to OpenAPI type
@@ -41,7 +44,10 @@ export const generateSequelizeSchemas = async () => {
   const modelMap = {
       User,
   GuestKey,
-  Guest
+  Guest,
+  Group,
+  Message,
+  GroupMember
   };
 
   for (const [name, model] of Object.entries(modelMap)) {

@@ -22,7 +22,7 @@ export const registerController = async (req, res) => {
   }
 
   try {
-    const { User } = req.models || {};
+    // Use directly imported User model instead of req.models
     const existUser = await User.findOne({
       where: {
         [Op.or]: [{ username }, { email }],
@@ -115,7 +115,8 @@ export const loginController = async (req, res) => {
     if (!username && !email) {
       return sendError(res, "Username or Email is required", 400);
     }
-    const { User } = req.models || {};
+    
+    // Use directly imported User model instead of req.models
     // 💡 Find user by either username OR email
     const user = await User.findOne({
       where: {

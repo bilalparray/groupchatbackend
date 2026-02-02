@@ -6,6 +6,9 @@ dotenv.config();
 import createUserModel from "../model/userModel.js";
 import createGuestKeyModel from "../model/guestKeyModel.js"
 import createGuestModel from "../model/guestModel.js"
+import createGroupModel from "../model/groupModel.js";
+import createMessageModel from "../model/messageModel.js";
+import createGroupMemberModel from "../model/groupMemberModel.js";
 
 
 
@@ -13,6 +16,9 @@ import createGuestModel from "../model/guestModel.js"
 let User = null;
 let GuestKey=null;
 let Guest=null;
+let Group = null;
+let Message = null;
+let GroupMember = null;
 
 
 // DB Connection
@@ -41,10 +47,30 @@ export const dbConnection = async (database, username, password) => {
     // Initialize models
     User = await createUserModel(sequelize);
     GuestKey=await createGuestKeyModel(sequelize);
-    Guest=await createGuestModel(sequelize)
+    Guest=await createGuestModel(sequelize);
+    Group = await createGroupModel(sequelize);
+    Message = await createMessageModel(sequelize);
+    GroupMember = await createGroupMemberModel(sequelize);
  
+    // Define relationships
     GuestKey.hasMany(Guest, { foreignKey: "guestKeyId" });
     Guest.belongsTo(GuestKey, { foreignKey: "guestKeyId" });
+
+    // Group relationships
+    User.hasMany(Group, { foreignKey: "owner", as: "ownedGroups" });
+    Group.belongsTo(User, { foreignKey: "owner", as: "ownerUser" });
+    
+    Group.hasMany(Message, { foreignKey: "groupId", as: "messages" });
+    Message.belongsTo(Group, { foreignKey: "groupId", as: "group" });
+    
+    Group.hasMany(GroupMember, { foreignKey: "groupId", as: "members" });
+    GroupMember.belongsTo(Group, { foreignKey: "groupId", as: "group" });
+    
+    User.hasMany(GroupMember, { foreignKey: "userId", as: "groupMemberships" });
+    GroupMember.belongsTo(User, { foreignKey: "userId", as: "user" });
+    
+    User.hasMany(Message, { foreignKey: "sender", as: "sentMessages" });
+    Message.belongsTo(User, { foreignKey: "sender", as: "senderUser" });
 
     // Database Sync
     await sequelize.sync({ alter: true });
@@ -55,8 +81,10 @@ export const dbConnection = async (database, username, password) => {
       models: {
         User,
         GuestKey,
-        Guest
-        //Refund
+        Guest,
+        Group,
+        Message,
+        GroupMember
       },
     };
   } catch (error) {
@@ -69,5 +97,8 @@ export const dbConnection = async (database, username, password) => {
 export {
   User,
   GuestKey,
-  Guest
+  Guest,
+  Group,
+  Message,
+  GroupMember
 };

@@ -34,7 +34,9 @@ async function start() {
     await dbConnection(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS);
 
     // 2) Register ALL ROUTES (BASE_URL applied only here)
-    registerRoutes(app, process.env.BASE_URL);
+    const baseUrl = process.env.BASE_URL || "/api/v1";
+    console.log(`[Server] Using BASE_URL: "${baseUrl}"`);
+    registerRoutes(app, baseUrl);
 
     // 3) Setup Swagger — ❗ NO BASE_URL HERE
     await setupSwagger(app);
