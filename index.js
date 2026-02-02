@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import cookie from "cookie-parser";
+import os from "os";
 
 import { dbConnection } from "./db/dbconnection.js";
 import { registerRoutes } from "./MainRoute/mainRoutes.js";
@@ -41,10 +42,31 @@ async function start() {
     // 3) Setup Swagger — ❗ NO BASE_URL HERE
     await setupSwagger(app);
 
-    // 4) Start server
+    // 4) Start server - Listen on all network interfaces (0.0.0.0)
     const PORT = process.env.PORT || 8081;
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    const HOST = process.env.HOST || '0.0.0.0'; // Listen on all interfaces
+    
+    app.listen(PORT, HOST, () => {
+      // Get local IP address
+      const networkInterfaces = os.networkInterfaces();
+      let localIP = 'localhost';
+      
+      // Find the first non-internal IPv4 address
+      for (const interfaceName in networkInterfaces) {
+        const interfaces = networkInterfaces[interfaceName];
+        for (const iface of interfaces) {
+          if (iface.family === 'IPv4' && !iface.internal) {
+            localIP = iface.address;
+            break;
+          }
+        }
+        if (localIP !== 'localhost') break;
+      }
+      
+      console.log(`🚀 Server running at:`);
+      console.log(`   Local:   http://localhost:${PORT}`);
+      console.log(`   Network: http://${localIP}:${PORT}`);
+      console.log(`   Access from other devices using: http://${localIP}:${PORT}`);
     });
 
   } catch (err) {
