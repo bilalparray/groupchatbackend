@@ -1,12 +1,25 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { sendError } from '../../Helper/response.helper.js';
-import { User } from '../../db/dbconnection.js';
+import { User, Guest } from '../../db/dbconnection.js';
 dotenv.config();
 
 const generateAccessToken=async(user)=>{
+    // Build token payload - include name for guests
+    const payload = {
+      id: user.id,
+      role: user.role
+    };
+    
+    // For guests, include name; for users, include username
+    if (user.role === "Guest") {
+      payload.name = user.name;
+    } else {
+      payload.username = user.username;
+    }
+    
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
+      payload,
       process.env.JWT_SECRET,
       {
         expiresIn: "1d",
@@ -16,12 +29,21 @@ const generateAccessToken=async(user)=>{
 }
 
 const generateRefreshToken=async(user)=>{
+    // Build token payload - include name for guests
+    const payload = {
+      id: user.id,
+      role: user.role
+    };
+    
+    // For guests, include name; for users, include username
+    if (user.role === "Guest") {
+      payload.name = user.name;
+    } else {
+      payload.username = user.username;
+    }
+    
     const token = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
+      payload,
       process.env.REFRESH_SECRET,
       {
         expiresIn: "7d",
@@ -38,21 +60,37 @@ const authenticateToken = async (req, res, next) => {
       return sendError(res, "Authentication token missing", 401);
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (error, decoded) => {
       if (error) {
         return sendError(res, "Invalid or expired token", 403);
       }
-      // For guests, ensure we have the correct structure
+      // For guests, ensure we have the correct structure with name
       if (decoded.role === "Guest") {
+        let guestName = decoded.name;
+        
+        // If name is not in token (old token), fetch from database
+        if (!guestName) {
+          try {
+            const guestRecord = await Guest.findByPk(decoded.id);
+            if (guestRecord && guestRecord.name) {
+              guestName = guestRecord.name;
+              console.log(`[authenticateToken] Fetched guest name from DB for ID ${decoded.id}: "${guestName}"`);
+            }
+          } catch (dbError) {
+            console.error(`[authenticateToken] Error fetching guest name from DB:`, dbError);
+          }
+        }
+        
         req.user = { 
           id: decoded.id, 
           role: decoded.role,
-          name: decoded.name // Include name for guests
+          name: guestName || null
         };
+        console.log(`[authenticateToken] Authenticated guest:`, { id: req.user.id, name: req.user.name, role: req.user.role });
       } else {
         req.user = decoded; // ✅ SET req.user with { id, username/name, role, ... }
+        console.log(`[authenticateToken] Authenticated user:`, { id: req.user.id, role: req.user.role });
       }
-      console.log(`[authenticateToken] Authenticated user:`, { id: req.user.id, role: req.user.role });
       next();
     });
   } catch (error) {
@@ -78,7 +116,12 @@ export default async function authenticate(req, res, next) {
     // Check if it's a guest (role is "Guest") or a regular user
     if (decoded.role === "Guest") {
       // For guests, use the decoded info directly (they're in Guest table, not User table)
-      req.user = { id: decoded.id, role: decoded.role };
+      // Include name from token payload if available
+      req.user = { 
+        id: decoded.id, 
+        role: decoded.role,
+        name: decoded.name || null // Include name for guests (will be fetched from DB if missing)
+      };
     } else {
       // For regular users, look them up in User table
       const user = await User.findByPk(decoded.id);

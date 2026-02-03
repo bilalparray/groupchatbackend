@@ -123,6 +123,9 @@ export const getGroupsController = async (req, res) => {
 };
 
 // ✅ CREATE GROUP
+// Each group has exactly ONE invite key (1:1 relationship)
+// Admin/Users can create multiple groups, each with its own unique invite key
+// Guests can join multiple groups using different invite keys
 export const createGroupController = async (req, res) => {
   try {
     const user = req.user;
@@ -141,7 +144,8 @@ export const createGroupController = async (req, res) => {
       return sendError(res, "Group name is required", 400);
     }
 
-    // Generate unique invite key
+    // Generate unique invite key (1:1 relationship - one key per group)
+    // The inviteKey field has a unique constraint in the database
     let inviteKey = generateInviteKey();
     let keyExists = true;
     while (keyExists) {
@@ -153,12 +157,12 @@ export const createGroupController = async (req, res) => {
       }
     }
 
-    // Create group
+    // Create group with its unique invite key
     const group = await Group.create({
       name: name.trim(),
       description: description?.trim() || "No description",
       owner: user.id,
-      inviteKey,
+      inviteKey, // One invite key per group (1:1 relationship)
       createdBy: user.id,
       lastModifiedBy: user.id,
     });
@@ -197,6 +201,8 @@ export const createGroupController = async (req, res) => {
 };
 
 // ✅ GENERATE NEW INVITE KEY
+// Regenerates the invite key for a group (replaces the old one)
+// Maintains 1:1 relationship - each group always has exactly one invite key
 export const generateInviteKeyController = async (req, res) => {
   try {
     const user = req.user;
@@ -216,7 +222,7 @@ export const generateInviteKeyController = async (req, res) => {
       return sendError(res, "Only group owner can generate invite keys", 403);
     }
 
-    // Generate new unique invite key
+    // Generate new unique invite key (replaces the old one, maintaining 1:1 relationship)
     let inviteKey = generateInviteKey();
     let keyExists = true;
     while (keyExists) {
@@ -228,7 +234,7 @@ export const generateInviteKeyController = async (req, res) => {
       }
     }
 
-    // Update group with new invite key
+    // Update group with new invite key (replaces old key, maintaining 1:1)
     await group.update({
       inviteKey,
       lastModifiedBy: user.id,
@@ -248,6 +254,8 @@ export const generateInviteKeyController = async (req, res) => {
 };
 
 // ✅ JOIN GROUP WITH INVITE KEY
+// Users (including guests) can join multiple groups using different invite keys
+// Each group has one unique invite key, and users can be members of many groups
 export const joinGroupWithInviteKeyController = async (req, res) => {
   try {
     const user = req.user;
@@ -263,6 +271,7 @@ export const joinGroupWithInviteKeyController = async (req, res) => {
     console.log(`[Join Group] User ${user.id} (${user.role}) attempting to join with key: "${trimmedKey}"`);
 
     // Find group by invite key (case-sensitive)
+    // Each group has exactly one invite key (1:1 relationship)
     const group = await Group.findOne({ where: { inviteKey: trimmedKey } });
     if (!group) {
       console.log(`[Join Group] Group not found for key: "${trimmedKey}"`);
@@ -274,7 +283,8 @@ export const joinGroupWithInviteKeyController = async (req, res) => {
     const userId = user.id;
     const userType = user.role === "Guest" ? "Guest" : "User";
 
-    // Check if user is already a member (one membership per user per group)
+    // Check if user is already a member of THIS specific group
+    // Note: Users can be members of multiple groups (one membership per user per group)
     const existingMember = await GroupMember.findOne({
       where: {
         groupId: group.id,
